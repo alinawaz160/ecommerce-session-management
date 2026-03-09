@@ -1,0 +1,12 @@
+extends layout
+
+block content
+  .place-order-wrap
+    .place-order-card
+      h1 Confirm Your Order
+      p.confirm-text Your cart has been reserved. Click below to place your order and receive a confirmation.
+      p.cart-ref Cart Reference: #[strong= cartId]
+      form(action="/place-order-page" method="post")
+        .place-order-actions
+          a.btn-secondary(href="/checkout-page") Back
+          button.btn-primary(type="submit") Confirm & Place Order

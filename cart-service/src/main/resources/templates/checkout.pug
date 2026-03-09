@@ -1,0 +1,41 @@
+extends layout
+
+block content
+  h1 Checkout
+  .checkout-wrap
+    .checkout-summary
+      h2 Order Summary
+      table.summary-table
+        thead
+          tr
+            th Item
+            th Qty
+            th Subtotal
+        tbody
+          each item in cart.items
+            tr
+              td= item.productName
+              td= item.quantity
+              td $#{item.subtotal}
+        tfoot
+          tr
+            td(colspan="2") Total
+            td
+              strong $#{cart.totalAmount}
+
+    form.checkout-form(action="/checkout-page" method="post")
+      h2 Shipping & Payment
+      .form-group
+        label(for="shippingAddress") Shipping Address
+        textarea#shippingAddress(name="shippingAddress" rows="4" placeholder="Enter full shipping address" required)
+      .form-group
+        label(for="paymentMethod") Payment Method
+        select#paymentMethod(name="paymentMethod" required)
+          option(value="" disabled selected) Select payment method
+          option(value="CREDIT_CARD") Credit Card
+          option(value="DEBIT_CARD") Debit Card
+          option(value="PAYPAL") PayPal
+          option(value="BANK_TRANSFER") Bank Transfer
+      .checkout-actions
+        a.btn-secondary(href="/cart-page") Back to Cart
+        button.btn-primary(type="submit") Place Order

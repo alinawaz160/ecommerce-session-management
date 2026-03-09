@@ -1,0 +1,29 @@
+server:
+  port: 8082
+
+spring:
+  application:
+    name: checkout-service
+
+  # Cassandra configuration
+  cassandra:
+    keyspace-name: ecommerce
+    contact-points: localhost
+    port: 9042
+    local-datacenter: datacenter1
+    schema-action: CREATE_IF_NOT_EXISTS
+    connection:
+      connect-timeout: 10s
+      init-query-timeout: 10s
+    request:
+      timeout: 10s
+      consistency: LOCAL_QUORUM
+
+# Cart Service base URL (REST client)
+cart-service:
+  base-url: http://localhost:8081
+
+logging:
+  level:
+    com.ecommerce.checkout: DEBUG
+    com.datastax.oss.driver: WARN

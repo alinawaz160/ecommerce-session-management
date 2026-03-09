@@ -1,0 +1,38 @@
+doctype html
+html(lang="en")
+  head
+    meta(charset="UTF-8")
+    meta(name="viewport" content="width=device-width, initial-scale=1.0")
+    title ShopWave
+    link(rel="stylesheet" href="/css/style.css")
+  body
+    nav.navbar
+      .navbar-brand
+        a(href="/") ShopWave
+      ul.navbar-links
+        li
+          a(href="/") Home
+        li
+          a(href="/cart-page")
+            span Cart
+            if cartCount > 0
+              span.badge= cartCount
+        if loggedIn
+          li
+            span.user-email= userEmail
+          li
+            form(action="/logout-page" method="post")
+              button.btn-link(type="submit") Logout
+        else
+          li
+            a(href="/register-page") Register
+          li
+            a(href="/login-page") Login
+
+    .container
+      if success
+        .alert.alert-success= success
+      if error
+        .alert.alert-error= error
+
+      block content
