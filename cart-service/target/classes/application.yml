@@ -31,19 +31,10 @@ spring:
         dialect: org.hibernate.dialect.MySQLDialect
         format_sql: true
 
-  # Spring Session - store sessions in MySQL (SPRING_SESSION table)
-  session:
-    store-type: jdbc
-    jdbc:
-      initialize-schema: always
-      table-name: SPRING_SESSION
 
-  sql:
-    init:
-      mode: always
-      schema-locations: classpath:schema.sql
+checkout-service:
+  base-url: http://localhost:8082
 
 logging:
   level:
     com.ecommerce.cart: DEBUG
-    org.springframework.session: DEBUG

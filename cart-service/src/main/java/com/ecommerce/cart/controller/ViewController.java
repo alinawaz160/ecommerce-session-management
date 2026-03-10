@@ -186,9 +186,20 @@ public class ViewController {
     @PostMapping("/checkout-page")
     public String initiateCheckout(@RequestParam String shippingAddress,
                                    @RequestParam String paymentMethod,
+                                   @RequestParam(required = false) List<String> productIds,
+                                   @RequestParam(required = false) List<Integer> quantities,
                                    HttpSession session,
                                    RedirectAttributes ra) {
         try {
+            // Apply any quantity changes from the checkout form
+            if (productIds != null && quantities != null) {
+                for (int i = 0; i < productIds.size(); i++) {
+                    UpdateItemRequest upd = new UpdateItemRequest();
+                    upd.setQuantity(quantities.get(i));
+                    cartService.updateItem(session, productIds.get(i), upd);
+                }
+            }
+
             CartDto cart = cartService.getOrCreateCart(session);
             if (cart.getItems() == null || cart.getItems().isEmpty()) {
                 ra.addFlashAttribute("error", "Your cart is empty.");
@@ -205,7 +216,7 @@ public class ViewController {
             req.setItems(CheckoutServiceClient.fromDb(cart.getItems()));
 
             UUID cartId = checkoutServiceClient.initiateCheckout(req);
-            session.setAttribute("CART_ID", cartId.toString());
+            cartService.storePendingCartId(session, cartId.toString());
 
             return "redirect:/place-order-page";
         } catch (Exception e) {
@@ -217,7 +228,7 @@ public class ViewController {
 
     @GetMapping("/place-order-page")
     public String placeOrderPage(Model model, HttpSession session, RedirectAttributes ra) {
-        String cartIdStr = (String) session.getAttribute("CART_ID");
+        String cartIdStr = cartService.getPendingCartId(session);
         if (cartIdStr == null) {
             return "redirect:/cart-page";
         }
@@ -228,7 +239,7 @@ public class ViewController {
 
     @PostMapping("/place-order-page")
     public String placeOrder(HttpSession session, RedirectAttributes ra) {
-        String cartIdStr = (String) session.getAttribute("CART_ID");
+        String cartIdStr = cartService.getPendingCartId(session);
         if (cartIdStr == null) {
             ra.addFlashAttribute("error", "No pending checkout. Please start checkout again.");
             return "redirect:/cart-page";
@@ -241,7 +252,7 @@ public class ViewController {
 
             String orderNumber = checkoutServiceClient.placeOrder(req);
 
-            session.removeAttribute("CART_ID");
+            cartService.clearPendingCartId(session);
             cartService.clearCart(session);
             session.setAttribute("ORDER_NUMBER", orderNumber);
 

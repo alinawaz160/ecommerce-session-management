@@ -19,4 +19,13 @@ public interface CartService {
 
     /** Remove all items and clear the cart. */
     void clearCart(HttpSession session);
+
+    /** Store the checkout Cart ID. Guest → session; logged-in → DB. */
+    void storePendingCartId(HttpSession session, String cartId);
+
+    /** Retrieve the pending Cart ID. Guest → session; logged-in → DB. */
+    String getPendingCartId(HttpSession session);
+
+    /** Clear the pending Cart ID after order is placed. */
+    void clearPendingCartId(HttpSession session);
 }

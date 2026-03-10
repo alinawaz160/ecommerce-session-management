@@ -30,6 +30,10 @@ public class Cart {
     @Column(name = "user_id", unique = true)
     private Long userId;
 
+    /** UUID from checkout-service, stored in DB for logged-in users */
+    @Column(name = "pending_cart_id", length = 36)
+    private String pendingCartId;
+
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     @Builder.Default

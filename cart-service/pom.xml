@@ -12,7 +12,6 @@
     </parent>
 
     <artifactId>cart-service</artifactId>
-    <n>cart-service</n>
     <description>Cart service with MySQL and Session-based guest user management</description>
 
     <dependencies>

@@ -17,8 +17,8 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
 
-    static final String SESSION_USER_ID = "USER_ID";
-    static final String SESSION_USER_EMAIL = "USER_EMAIL";
+    public static final String SESSION_USER_ID = "USER_ID";
+    public static final String SESSION_USER_EMAIL = "USER_EMAIL";
 
     private final UserRepository userRepository;
     private final BCryptPasswordEncoder passwordEncoder;

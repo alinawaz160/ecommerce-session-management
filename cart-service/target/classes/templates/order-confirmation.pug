@@ -1,0 +1,14 @@
+extends layout
+
+block content
+  .confirmation-wrap
+    .confirmation-card
+      .check-icon ✓
+      h1 Order Placed!
+      p.confirm-msg Thank you for your purchase. Your order has been received.
+      .order-number-wrap
+        span.label Order Number
+        span.order-number= orderNumber
+      p.confirm-sub A confirmation email will be sent to your inbox shortly.
+      .confirm-actions
+        a.btn-primary(href="/") Continue Shopping

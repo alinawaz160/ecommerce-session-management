@@ -23,7 +23,8 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class CartServiceImpl implements CartService {
 
-    static final String SESSION_CART = "CART";
+    static final String SESSION_CART    = "CART";
+    static final String SESSION_CART_ID = "CART_ID";
 
     private final CartRepository      cartRepository;
     private final CartItemRepository  cartItemRepository;
@@ -212,6 +213,50 @@ public class CartServiceImpl implements CartService {
     private Cart findDbCartOrThrow(Long userId) {
         return cartRepository.findByUserIdWithItems(userId)
             .orElseThrow(() -> new CartNotFoundException("No cart found for user: " + userId));
+    }
+
+    // ── Pending Cart ID (checkout UUID) ────────────────────────────────────────
+
+    @Override
+    @Transactional
+    public void storePendingCartId(HttpSession session, String cartId) {
+        Long userId = getUserId(session);
+        if (userId != null) {
+            Cart cart = cartRepository.findByUserIdWithItems(userId)
+                .orElseGet(() -> createDbCartSafe(userId));
+            cart.setPendingCartId(cartId);
+            cartRepository.save(cart);
+            log.info("Stored pendingCartId {} in DB for userId {}", cartId, userId);
+        } else {
+            session.setAttribute(SESSION_CART_ID, cartId);
+            log.info("Stored pendingCartId {} in session for guest", cartId);
+        }
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public String getPendingCartId(HttpSession session) {
+        Long userId = getUserId(session);
+        if (userId != null) {
+            return cartRepository.findByUserId(userId)
+                .map(Cart::getPendingCartId)
+                .orElse(null);
+        }
+        return (String) session.getAttribute(SESSION_CART_ID);
+    }
+
+    @Override
+    @Transactional
+    public void clearPendingCartId(HttpSession session) {
+        Long userId = getUserId(session);
+        if (userId != null) {
+            cartRepository.findByUserId(userId).ifPresent(cart -> {
+                cart.setPendingCartId(null);
+                cartRepository.save(cart);
+            });
+        } else {
+            session.removeAttribute(SESSION_CART_ID);
+        }
     }
 
     // ── Helpers ────────────────────────────────────────────────────────────────

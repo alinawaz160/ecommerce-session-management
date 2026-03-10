@@ -1,0 +1,26 @@
+extends layout
+
+block content
+  section.hero
+    h1 Premium Furniture
+    p Elevate your space with our curated collection
+
+  section.products-section
+    h2 Our Products
+    .product-grid
+      each product in products
+        .product-card
+          .product-image-wrap
+            img(src=product.imageUrl alt=product.productName onerror="this.src='https://via.placeholder.com/400x300?text=Product'")
+          .product-info
+            h3.product-name= product.productName
+            p.product-price $#{product.price}
+            p.product-stock(class=product.stock < 10 ? 'low-stock' : '')
+              | #{product.stock < 10 ? 'Only ' + product.stock + ' left' : 'In stock'}
+            form(action="/cart-page/add" method="post")
+              input(type="hidden" name="productId" value=product.productId)
+              input(type="hidden" name="productName" value=product.productName)
+              input(type="hidden" name="price" value=product.price)
+              input(type="hidden" name="imageUrl" value=product.imageUrl)
+              input(type="hidden" name="quantity" value="1")
+              button.btn-primary(type="submit") Add to Cart

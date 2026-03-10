@@ -1,0 +1,15 @@
+extends layout
+
+block content
+  .auth-wrap
+    .auth-card
+      h1 Sign In
+      form.auth-form(action="/login-page" method="post")
+        .form-group
+          label(for="username") Username
+          input#username(type="text" name="username" placeholder="Your username" required autocomplete="username")
+        .form-group
+          label(for="password") Password
+          input#password(type="password" name="password" placeholder="Your password" required autocomplete="current-password")
+        button.btn-primary.btn-full(type="submit") Sign In
+      p.auth-link Don't have an account? #[a(href="/register-page") Register]

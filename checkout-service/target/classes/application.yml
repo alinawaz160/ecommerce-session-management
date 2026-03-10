@@ -19,9 +19,9 @@ spring:
       timeout: 10s
       consistency: LOCAL_QUORUM
 
-# Cart Service base URL (REST client)
-cart-service:
-  base-url: http://localhost:8081
+# Order Service base URL (REST client)
+order-service:
+  base-url: http://localhost:8083
 
 logging:
   level:
