@@ -1,0 +1,74 @@
+import { useState, useEffect } from 'react'
+import client from '../api/client.js'
+import { useAuth } from '../context/AuthContext.jsx'
+
+const PRODUCT_EMOJIS = { P001: '🛋️', P002: '📺', P003: '☕', P004: '📚', P005: '🍽️' }
+
+export default function ProductsPage() {
+  const { refreshCartCount } = useAuth()
+  const [products, setProducts] = useState([])
+  const [loading, setLoading] = useState(true)
+  const [toast, setToast] = useState('')
+  const [adding, setAdding] = useState({})
+
+  useEffect(() => {
+    client.get('/api/products')
+      .then(res => setProducts(res.data))
+      .finally(() => setLoading(false))
+  }, [])
+
+  function showToast(msg) {
+    setToast(msg)
+    setTimeout(() => setToast(''), 2500)
+  }
+
+  async function addToCart(product) {
+    setAdding(prev => ({ ...prev, [product.productId]: true }))
+    try {
+      await client.post('/api/cart/items', {
+        productId: product.productId,
+        productName: product.productName,
+        price: product.price,
+        quantity: 1,
+        imageUrl: product.imageUrl,
+      })
+      await refreshCartCount()
+      showToast(`${product.productName} added to cart!`)
+    } catch {
+      showToast('Failed to add item')
+    } finally {
+      setAdding(prev => ({ ...prev, [product.productId]: false }))
+    }
+  }
+
+  if (loading) return <div className="loading">Loading products...</div>
+
+  return (
+    <div>
+      <h1 className="page-title">Products</h1>
+      <div className="products-grid">
+        {products.map(product => (
+          <div key={product.productId} className="product-card">
+            <div className="product-img">
+              {PRODUCT_EMOJIS[product.productId] || '📦'}
+            </div>
+            <div className="product-info">
+              <div className="product-name">{product.productName}</div>
+              <div className="product-price">${Number(product.price).toFixed(2)}</div>
+              <div className="product-stock">{product.stock} in stock</div>
+              <button
+                className="btn btn-primary"
+                style={{ width: '100%' }}
+                onClick={() => addToCart(product)}
+                disabled={adding[product.productId]}
+              >
+                {adding[product.productId] ? 'Adding...' : 'Add to Cart'}
+              </button>
+            </div>
+          </div>
+        ))}
+      </div>
+      {toast && <div className="toast">{toast}</div>}
+    </div>
+  )
+}

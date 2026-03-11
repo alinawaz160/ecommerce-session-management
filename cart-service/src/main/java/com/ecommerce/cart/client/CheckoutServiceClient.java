@@ -60,9 +60,8 @@ public class CheckoutServiceClient {
 
     @Data
     public static class CheckoutRequest {
+        private UUID existingCartId;   // non-null = overwrite existing snapshot
         private String sessionId;
-        private String shippingAddress;
-        private String paymentMethod;
         private String userEmail;
         private List<ItemDto> items;
         private BigDecimal totalAmount;
@@ -91,6 +90,8 @@ public class CheckoutServiceClient {
         private UUID cartId;
         private String sessionId;
         private String userEmail;
+        private String shippingAddress;
+        private String paymentMethod;
     }
 
     @Data

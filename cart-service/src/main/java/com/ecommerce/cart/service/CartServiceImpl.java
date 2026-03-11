@@ -10,6 +10,8 @@ import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -262,7 +264,11 @@ public class CartServiceImpl implements CartService {
     // ── Helpers ────────────────────────────────────────────────────────────────
 
     private Long getUserId(HttpSession session) {
-        return (Long) session.getAttribute(UserServiceImpl.SESSION_USER_ID);
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        if (auth != null && auth.isAuthenticated() && auth.getPrincipal() instanceof Long userId) {
+            return userId;
+        }
+        return null; // guest
     }
 
     public CartDto toCartDto(List<SessionCartItem> items, String sessionId) {

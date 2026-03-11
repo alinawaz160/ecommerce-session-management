@@ -2,10 +2,12 @@ package com.ecommerce.checkout.dto;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
+
 import lombok.Data;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.UUID;
 
 /**
  * Payload sent by the Main (cart) service to initiate a checkout.
@@ -14,13 +16,13 @@ import java.util.List;
 @Data
 public class CheckoutRequest {
 
+    private UUID existingCartId;   // non-null = overwrite existing snapshot
+
     @NotBlank(message = "sessionId is required")
     private String sessionId;
 
-    @NotBlank(message = "shippingAddress is required")
     private String shippingAddress;
 
-    @NotBlank(message = "paymentMethod is required")
     private String paymentMethod;
 
     private String userEmail;

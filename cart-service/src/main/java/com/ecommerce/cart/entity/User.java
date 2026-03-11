@@ -28,6 +28,12 @@ public class User {
     @Column(nullable = false)
     private String password;
 
+    @Column(name = "refresh_token", length = 64)
+    private String refreshToken;
+
+    @Column(name = "refresh_token_expiry")
+    private LocalDateTime refreshTokenExpiry;
+
     @CreationTimestamp
     @Column(name = "created_at", updatable = false)
     private LocalDateTime createdAt;
