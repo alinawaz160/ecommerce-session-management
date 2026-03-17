@@ -5,7 +5,7 @@ import { useAuth } from '../context/AuthContext.jsx'
 
 export default function CartPage() {
   const navigate = useNavigate()
-  const { refreshCartCount } = useAuth()
+  const { refreshCartCount, isLoggedIn } = useAuth()
   const [proceeding, setProceeding] = useState(false)
   const [proceedError, setProceedError] = useState('')
   const [cart, setCart] = useState(null)
@@ -13,6 +13,7 @@ export default function CartPage() {
   const [updating, setUpdating] = useState({})
 
   const fetchCart = useCallback(async () => {
+    setLoading(true)
     try {
       const res = await client.get('/api/cart')
       setCart(res.data)
@@ -21,7 +22,8 @@ export default function CartPage() {
     }
   }, [])
 
-  useEffect(() => { fetchCart() }, [fetchCart])
+  // Fetch on mount and whenever auth state changes (e.g. logout)
+  useEffect(() => { fetchCart() }, [fetchCart, isLoggedIn])
 
   async function updateQty(productId, qty) {
     const quantity = parseInt(qty, 10)

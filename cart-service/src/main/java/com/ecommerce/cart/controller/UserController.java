@@ -6,6 +6,7 @@ import com.ecommerce.cart.dto.RefreshTokenRequest;
 import com.ecommerce.cart.dto.RegisterRequest;
 import com.ecommerce.cart.dto.UserDto;
 import com.ecommerce.cart.service.UserService;
+import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -38,9 +39,10 @@ public class UserController {
     }
 
     @PostMapping("/logout")
-    public ResponseEntity<Void> logout(@Valid @RequestBody RefreshTokenRequest request) {
+    public ResponseEntity<Void> logout(@Valid @RequestBody RefreshTokenRequest request, HttpSession session) {
         log.debug("POST logout");
         userService.logout(request.getRefreshToken());
+        session.invalidate();  // clear session cart and pendingCartId so guest session starts clean
         return ResponseEntity.noContent().build();
     }
 

@@ -2,8 +2,6 @@ import { useState, useEffect } from 'react'
 import client from '../api/client.js'
 import { useAuth } from '../context/AuthContext.jsx'
 
-const PRODUCT_EMOJIS = { P001: '🛋️', P002: '📺', P003: '☕', P004: '📚', P005: '🍽️' }
-
 export default function ProductsPage() {
   const { refreshCartCount } = useAuth()
   const [products, setProducts] = useState([])
@@ -49,9 +47,12 @@ export default function ProductsPage() {
       <div className="products-grid">
         {products.map(product => (
           <div key={product.productId} className="product-card">
-            <div className="product-img">
-              {PRODUCT_EMOJIS[product.productId] || '📦'}
-            </div>
+            <img
+              className="product-img"
+              src={product.imageUrl}
+              alt={product.productName}
+              onError={e => { e.target.src = 'https://placehold.co/600x400?text=No+Image' }}
+            />
             <div className="product-info">
               <div className="product-name">{product.productName}</div>
               <div className="product-price">${Number(product.price).toFixed(2)}</div>
