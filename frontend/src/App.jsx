@@ -7,6 +7,9 @@ import ProductsPage from './pages/ProductsPage.jsx'
 import CartPage from './pages/CartPage.jsx'
 import CheckoutPage from './pages/CheckoutPage.jsx'
 import OrderConfirmationPage from './pages/OrderConfirmationPage.jsx'
+import AiModelPage from './pages/AiModelPage.jsx'
+import NewProduct from './pages/NewProduct.jsx'
+import AdminRoute from './components/AdminRoute.jsx'
 
 export default function App() {
   return (
@@ -22,6 +25,8 @@ export default function App() {
             <Route path="/order-confirmation" element={<OrderConfirmationPage />} />
             <Route path="/login" element={<LoginPage />} />
             <Route path="/register" element={<RegisterPage />} />
+            <Route path="/ai-model" element={<AiModelPage />} />
+            <Route path='/add-products' element = {<AdminRoute> <NewProduct /> </AdminRoute>} />
           </Routes>
         </main>
       </AuthProvider>

@@ -2,7 +2,7 @@ package com.ecommerce.cart.controller;
 
 import com.ecommerce.cart.client.CheckoutServiceClient;
 import com.ecommerce.cart.dto.*;
-import com.ecommerce.cart.service.CartService;
+import com.ecommerce.cart.service.cart.CartService;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -37,7 +37,7 @@ public class CartController {
     public ResponseEntity<CartDto> addItem(
             @Valid @RequestBody AddItemRequest request,
             HttpSession session) {
-        log.debug("POST addItem - productId: {}", request.getProductId());
+        log.debug("POST addItem - productId: {}", request.getId());
         return ResponseEntity.status(HttpStatus.CREATED).body(cartService.addItem(session, request));
     }
 

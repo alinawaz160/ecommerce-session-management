@@ -5,6 +5,7 @@ import com.ecommerce.cart.dto.LoginRequest;
 import com.ecommerce.cart.dto.RefreshTokenRequest;
 import com.ecommerce.cart.dto.RegisterRequest;
 import com.ecommerce.cart.dto.UserDto;
+import com.ecommerce.cart.entity.User;
 import com.ecommerce.cart.service.UserService;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
@@ -56,8 +57,8 @@ public class UserController {
     @GetMapping("/me")
     public ResponseEntity<UserDto> me() {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        Long userId = (Long) auth.getPrincipal();
-        UserDto user = userService.getCurrentUser(userId);
-        return ResponseEntity.ok(user);
+        User user = (User) auth.getPrincipal();
+        UserDto dto = userService.getCurrentUser(user.getId());
+        return ResponseEntity.ok(dto);
     }
 }

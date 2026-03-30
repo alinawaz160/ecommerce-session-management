@@ -5,12 +5,14 @@ import com.ecommerce.cart.dto.LoginRequest;
 import com.ecommerce.cart.dto.RegisterRequest;
 import com.ecommerce.cart.dto.UserDto;
 import com.ecommerce.cart.entity.User;
+import com.ecommerce.cart.enums.Role;
 import com.ecommerce.cart.repository.UserRepository;
 import com.ecommerce.cart.security.JwtUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -22,7 +24,7 @@ import java.time.LocalDateTime;
 public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
-    private final BCryptPasswordEncoder passwordEncoder;
+    private final PasswordEncoder passwordEncoder;
     private final JwtUtil jwtUtil;
 
     @Value("${jwt.access-token-expiry}")
@@ -44,7 +46,7 @@ public class UserServiceImpl implements UserService {
         User user = User.builder()
             .username(request.getUsername())
             .email(request.getEmail())
-            .password(passwordEncoder.encode(request.getPassword()))
+            .password(passwordEncoder.encode(request.getPassword())).role(Role.USER)
             .build();
 
         User saved = userRepository.save(user);
@@ -62,7 +64,10 @@ public class UserServiceImpl implements UserService {
             throw new IllegalArgumentException("Invalid username or password");
         }
 
-        String accessToken = jwtUtil.generateAccessToken(user.getId(), user.getEmail());
+        String accessToken = jwtUtil.generateAccessToken(
+                user.getId(),
+                user.getEmail(),
+                user.getRole().name());
         String refreshToken = jwtUtil.generateRefreshToken();
 
         user.setRefreshToken(refreshToken);
@@ -94,7 +99,10 @@ public class UserServiceImpl implements UserService {
             throw new IllegalArgumentException("Refresh token has expired");
         }
 
-        String newAccessToken = jwtUtil.generateAccessToken(user.getId(), user.getEmail());
+        String newAccessToken = jwtUtil.generateAccessToken(
+                user.getId(),
+                user.getEmail(),
+                user.getRole().name());
         String newRefreshToken = jwtUtil.generateRefreshToken();
 
         user.setRefreshToken(newRefreshToken);

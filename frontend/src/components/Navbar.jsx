@@ -2,7 +2,7 @@ import { Link, useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext.jsx'
 
 export default function Navbar() {
-  const { isLoggedIn, user, cartCount, logout } = useAuth()
+  const { isLoggedIn, user, cartCount, logout, isAdmin} = useAuth()
   const navigate = useNavigate()
 
   async function handleLogout() {
@@ -23,6 +23,7 @@ export default function Navbar() {
         </li>
         {isLoggedIn ? (
           <>
+           {isAdmin && <li><Link to="/add-products">Add Products</Link></li>}
             <li style={{ color: '#aaa', fontSize: '0.9rem' }}>Hi, {user.username}</li>
             <li>
               <button className="btn btn-outline" onClick={handleLogout}>Logout</button>

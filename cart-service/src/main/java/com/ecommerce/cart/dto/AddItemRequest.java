@@ -12,10 +12,10 @@ import java.math.BigDecimal;
 public class AddItemRequest {
 
     @NotBlank(message = "productId is required")
-    private String productId;
+    private String id;
 
     @NotBlank(message = "productName is required")
-    private String productName;
+    private String name;
 
     @NotNull(message = "price is required")
     @DecimalMin(value = "0.01", message = "price must be greater than 0")
@@ -26,4 +26,5 @@ public class AddItemRequest {
     private Integer quantity;
 
     private String imageUrl;
+    private String description;
 }

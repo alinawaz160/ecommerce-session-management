@@ -24,14 +24,15 @@ export default function ProductsPage() {
     setAdding(prev => ({ ...prev, [product.productId]: true }))
     try {
       await client.post('/api/cart/items', {
-        productId: product.productId,
-        productName: product.productName,
+        id: product.id,
+        name: product.name,
         price: product.price,
         quantity: 1,
         imageUrl: product.imageUrl,
+        description : product.description
       })
       await refreshCartCount()
-      showToast(`${product.productName} added to cart!`)
+      showToast(`${product.name} added to cart!`)
     } catch {
       showToast('Failed to add item')
     } finally {
@@ -46,25 +47,28 @@ export default function ProductsPage() {
       <h1 className="page-title">Products</h1>
       <div className="products-grid">
         {products.map(product => (
-          <div key={product.productId} className="product-card">
+          <div key={product.id} className="product-card">
             <img
               className="product-img"
               src={product.imageUrl}
-              alt={product.productName}
+              alt={product.name}
               onError={e => { e.target.src = 'https://placehold.co/600x400?text=No+Image' }}
             />
             <div className="product-info">
-              <div className="product-name">{product.productName}</div>
+              <div className="product-name">{product.name}</div>
               <div className="product-price">${Number(product.price).toFixed(2)}</div>
               <div className="product-stock">{product.stock} in stock</div>
               <button
                 className="btn btn-primary"
                 style={{ width: '100%' }}
                 onClick={() => addToCart(product)}
-                disabled={adding[product.productId]}
+                disabled={adding[product.id]}
               >
-                {adding[product.productId] ? 'Adding...' : 'Add to Cart'}
+                {adding[product.id] ? 'Adding...' : 'Add to Cart'}
               </button>
+            </div>
+            <div className='product-description'>
+              {product.description}
             </div>
           </div>
         ))}

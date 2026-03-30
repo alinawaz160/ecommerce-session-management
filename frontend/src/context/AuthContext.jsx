@@ -11,6 +11,7 @@ export function AuthProvider({ children }) {
   const [cartCount, setCartCount] = useState(0)
 
   const isLoggedIn = !!user
+  const isAdmin = user?.role === 'ADMIN'
 
   const refreshCartCount = useCallback(async () => {
     try {
@@ -51,7 +52,7 @@ export function AuthProvider({ children }) {
   }
 
   return (
-    <AuthContext.Provider value={{ user, isLoggedIn, cartCount, setCartCount, refreshCartCount, login, logout }}>
+    <AuthContext.Provider value={{ user, isLoggedIn, isAdmin, cartCount, setCartCount, refreshCartCount, login, logout }}>
       {children}
     </AuthContext.Provider>
   )
