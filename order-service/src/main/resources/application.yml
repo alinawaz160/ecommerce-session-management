@@ -37,6 +37,24 @@ spring:
       properties:
         spring.json.trusted.packages: "com.ecommerce.order.event"
 
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: ${MAIL_USERNAME:aleenawaz838@gmail.com}
+    password: ${MAIL_PASSWORD:xdftvgexsvistxwd}
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+            required: true
+
+app:
+  mail:
+    from: ${MAIL_USERNAME:alnawaz@bluestoneinnovation.net}
+    from-name: ShopEasy
+
 logging:
   level:
     com.ecommerce.order: DEBUG

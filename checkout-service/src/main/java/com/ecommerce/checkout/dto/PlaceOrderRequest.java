@@ -16,4 +16,6 @@ public class PlaceOrderRequest {
 
     private String sessionId;
     private String userEmail;
+    private String shippingAddress;
+    private String paymentMethod;
 }

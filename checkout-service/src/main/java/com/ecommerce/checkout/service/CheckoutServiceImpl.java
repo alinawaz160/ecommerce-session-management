@@ -38,7 +38,7 @@ public class CheckoutServiceImpl implements CheckoutService {
             throw new EmptyCartException(request.getSessionId());
         }
 
-        UUID cartId  = UUID.randomUUID();
+        UUID cartId  = request.getExistingCartId() != null ? request.getExistingCartId() : UUID.randomUUID();
         Instant now  = Instant.now();
 
         BigDecimal totalAmount = request.getTotalAmount() != null
@@ -65,10 +65,14 @@ public class CheckoutServiceImpl implements CheckoutService {
 
         orderRepository.save(order);
 
+        // Delete stale items before re-inserting (handles item removals/qty changes)
+        if (request.getExistingCartId() != null) {
+            orderItemRepository.deleteByOrderId(cartId);
+        }
         List<OrderItem> orderItems = buildOrderItems(cartId, request.getItems());
         orderItemRepository.saveAll(orderItems);
 
-        log.info("Cart snapshot saved — cartId: {}", cartId);
+        log.info("Cart snapshot {} — cartId: {}", request.getExistingCartId() != null ? "updated" : "saved", cartId);
         return CheckoutResponse.from(order, orderItems);
     }
 
@@ -82,6 +86,13 @@ public class CheckoutServiceImpl implements CheckoutService {
 
         Order snapshot = orderRepository.findById(request.getCartId())
             .orElseThrow(() -> new OrderNotFoundException(request.getCartId().toString()));
+
+        // Persist shipping/payment collected on the checkout form
+        if (request.getShippingAddress() != null) {
+            snapshot.setShippingAddress(request.getShippingAddress());
+            snapshot.setPaymentMethod(request.getPaymentMethod());
+            orderRepository.save(snapshot);
+        }
 
         List<OrderItem> items = orderItemRepository.findByOrderId(request.getCartId());
 
