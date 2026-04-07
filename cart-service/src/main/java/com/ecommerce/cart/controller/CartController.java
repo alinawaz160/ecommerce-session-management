@@ -11,6 +11,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
@@ -27,6 +28,13 @@ public class CartController {
 
     // ── Cart CRUD ─────────────────────────────────────────────────────────────
 
+    /**
+     *
+     *
+     *
+     * @param session
+     * @return
+     */
     @GetMapping
     public ResponseEntity<CartDto> getCart(HttpSession session) {
         log.debug("GET cart - session: {}", session.getId());
@@ -81,7 +89,7 @@ public class CartController {
         log.info("Initiating checkout for session: {}", session.getId());
 
         CartDto cart = cartService.getOrCreateCart(session);
-        if (cart.getItems() == null || cart.getItems().isEmpty()) {
+        if (CollectionUtils.isEmpty(cart.getItems())) {
             return ResponseEntity.badRequest()
                 .body(Map.of("error", "Cart is empty"));
         }

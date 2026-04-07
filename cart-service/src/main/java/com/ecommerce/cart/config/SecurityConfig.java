@@ -1,5 +1,6 @@
 package com.ecommerce.cart.config;
 
+import com.ecommerce.cart.enums.Role;
 import com.ecommerce.cart.security.JwtFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -35,7 +36,7 @@ public class SecurityConfig {
                     "/api/users/refresh"
                 ).permitAll()
                 .requestMatchers(GET, "/api/products/**").permitAll()
-                .requestMatchers("/api/admin/**").hasRole("ADMIN")
+                .requestMatchers("/api/admin/**").hasRole(Role.ADMIN.name())
                 .requestMatchers("/api/cart/**").permitAll()
                 .requestMatchers("/api/users/me", "/api/users/logout").authenticated()
                 .anyRequest().authenticated()
