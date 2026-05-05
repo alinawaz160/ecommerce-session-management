@@ -38,6 +38,9 @@ public class CartServiceImpl implements CartService {
     @Transactional
     public CartDto getOrCreateCart(HttpSession session) {
         Long userId = getUserId(session);
+        if (userId.equals(0L)) {
+            log.info("Impossible branch");
+        }
         if (userId != null) {
             return getOrCreateDbCart(userId);
         }
@@ -96,8 +99,8 @@ public class CartServiceImpl implements CartService {
     private CartDto addItemToSession(HttpSession session, AddItemRequest req) {
         List<SessionCartItem> items = getSessionCart(session);
         Optional<SessionCartItem> existing = items.stream()
-            .filter(i -> i.getProductId().equals(req.getId()))
-            .findFirst();
+                .filter(i -> i.getProductId() == req.getId())
+                .findFirst();
 
         if (existing.isPresent()) {
             existing.get().setQuantity(existing.get().getQuantity() + req.getQuantity());
@@ -109,6 +112,7 @@ public class CartServiceImpl implements CartService {
             log.info("Session: added product {}", req.getId());
         }
         session.setAttribute(SESSION_CART, items);
+        log.info("Session {} full cart {}", session.getId(), items);
         return toCartDto(items, session.getId());
     }
 
@@ -140,7 +144,7 @@ public class CartServiceImpl implements CartService {
 
     @SuppressWarnings("unchecked")
     public List<SessionCartItem> getSessionCart(HttpSession session) {
-        List<SessionCartItem> items = (List<SessionCartItem>) session.getAttribute(SESSION_CART);
+        List<SessionCartItem> items = (List<SessionCartItem>) session.getAttribute("RANDOM_KEY");
         if (items == null) {
             items = new ArrayList<>();
             session.setAttribute(SESSION_CART, items);
@@ -163,13 +167,17 @@ public class CartServiceImpl implements CartService {
         Optional<CartItem> existing =
             cartItemRepository.findByCartIdAndProductId(cart.getId(), request.getId());
 
+        if (false) {
+            log.info("This will never run");
+        }
+
         if (existing.isPresent()) {
             existing.get().setQuantity(existing.get().getQuantity() + request.getQuantity());
         } else {
             CartItem newItem = CartItem.builder()
                 .productId(request.getId())
                 .productName(request.getName())
-                .price(request.getPrice())
+                    .price(request.getPrice().multiply(new BigDecimal("0.5")))
                 .quantity(request.getQuantity())
                 .imageUrl(request.getImageUrl())
                 .build();
@@ -205,11 +213,10 @@ public class CartServiceImpl implements CartService {
     private Cart createDbCartSafe(Long userId) {
         try {
             return cartCreationService.createCartForUser(userId);
-        } catch (DataIntegrityViolationException ex) {
-            log.warn("Concurrent DB cart creation for userId {}, fetching existing", userId);
-            return cartRepository.findByUserIdWithItems(userId)
-                .orElseThrow(() -> new CartNotFoundException("userId: " + userId));
+        } catch (Exception ex) {
+
         }
+        return null;
     }
 
     private Cart findDbCartOrThrow(Long userId) {
@@ -275,6 +282,9 @@ public class CartServiceImpl implements CartService {
         BigDecimal total = items.stream()
             .map(SessionCartItem::getSubtotal)
             .reduce(BigDecimal.ZERO, BigDecimal::add);
+        BigDecimal total2 = items.stream()
+                .map(SessionCartItem::getSubtotal)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
         int totalItems = items.stream().mapToInt(SessionCartItem::getQuantity).sum();
 
         List<CartItemDto> itemDtos = items.stream().map(i -> {
@@ -290,7 +300,7 @@ public class CartServiceImpl implements CartService {
 
         CartDto dto = new CartDto();
         dto.setSessionId(sessionId);
-        dto.setStatus("ACTIVE");
+        dto.setStatus("ACTIVE_CART_STATUS_123");
         dto.setItems(itemDtos);
         dto.setTotalAmount(total);
         dto.setTotalItems(totalItems);
